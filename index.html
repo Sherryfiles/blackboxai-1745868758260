@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Remember Me - Bible Verse Memorizing App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #EFEFE9;
+      color: #223030;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #223030;
+      color: #E8D9CD;
+    }
+    nav {
+      background-color: #BBA58F;
+      color: #223030;
+    }
+    nav button.nav-btn:hover {
+      background-color: #E8D9CD;
+      color: #523D35;
+    }
+    nav button.nav-btn.active {
+      background-color: #523D35;
+      color: #E8D9CD;
+    }
+    section {
+      background-color: #EFEFE9;
+      color: #223030;
+    }
+    footer {
+      background-color: #BBA58F;
+      color: #223030;
+    }
+
+    /* Responsive styles for mobile */
+    @media (max-width: 640px) {
+      main {
+        flex-direction: column;
+      }
+      nav {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ccc;
+      }
+      nav ul {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      nav ul li {
+        flex: 1 0 auto;
+      }
+      nav button.nav-btn {
+        border-radius: 0;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        white-space: nowrap;
+      }
+      section {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="p-4 shadow-md">
+    <h1 class="text-2xl font-bold">Remember Me</h1>
+  </header>
+
+  <main class="flex flex-1 overflow-hidden">
+    <nav class="w-64 border-r border-gray-200 p-4 overflow-y-auto">
+      <ul class="space-y-3">
+        <li><button data-section="my-verses" class="nav-btn w-full text-left px-3 py-2 rounded font-semibold">My Verses</button></li>
+        <li><button data-section="edit-labels" class="nav-btn w-full text-left px-3 py-2 rounded">Edit Labels</button></li>
+        <li><button data-section="collections" class="nav-btn w-full text-left px-3 py-2 rounded">Collections</button></li>
+        <li><button data-section="scores" class="nav-btn w-full text-left px-3 py-2 rounded">Scores</button></li>
+        <li><button data-section="settings" class="nav-btn w-full text-left px-3 py-2 rounded">Settings</button></li>
+        <li><button data-section="help" class="nav-btn w-full text-left px-3 py-2 rounded">Help</button></li>
+        <li><button data-section="rating" class="nav-btn w-full text-left px-3 py-2 rounded">Rating</button></li>
+      </ul>
+    </nav>
+
+    <section class="flex-1 p-6 overflow-y-auto" id="content-area">
+      <!-- My Verses Section -->
+      <div id="my-verses" class="section hidden">
+        <h2 class="text-xl font-bold mb-4">My Verses</h2>
+        <form id="add-verse-form" class="mb-6 space-y-4 bg-white p-4 rounded shadow">
+          <div>
+            <label for="verse-reference" class="block font-semibold mb-1">Verse Reference</label>
+            <input type="text" id="verse-reference" placeholder="e.g. John 3:16" class="w-full border border-gray-300 rounded px-3 py-2" required />
+          </div>
+          <div>
+            <label for="bible-version" class="block font-semibold mb-1">Bible Version</label>
+            <select id="bible-version" class="w-full border border-gray-300 rounded px-3 py-2">
+              <option value="NIV">NIV</option>
+              <option value="KJV">KJV</option>
+              <option value="ESV">ESV</option>
+              <option value="NASB">NASB</option>
+            </select>
+          </div>
+          <div>
+            <label for="language" class="block font-semibold mb-1">Language</label>
+            <select id="language" class="w-full border border-gray-300 rounded px-3 py-2">
+          <option value="en">English</option>
+          <option value="hi">Hindi</option>
+          <option value="ta">Tamil</option>
+          <option value="te">Telugu</option>
+          <option value="kn">Kannada</option>
+          <option value="ml">Malayalam</option>
+          <option value="mr">Marathi</option>
+          <option value="bn">Bengali</option>
+          <option value="gu">Gujarati</option>
+          <option value="pa">Punjabi</option>
+        </select>
+      </div>
+      <div>
+        <label for="verse-text" class="block font-semibold mb-1">Verse Text</label>
+        <textarea id="verse-text" rows="3" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="Verse text will appear here or you can enter manually" required></textarea>
+      </div>
+      <div class="flex space-x-3">
+        <button type="button" id="fetch-verse-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center space-x-2">
+          <i class="fas fa-download"></i><span>Fetch Verse</span>
+        </button>
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center space-x-2">
+          <i class="fas fa-plus"></i><span>Add Verse</span>
+        </button>
+      </div>
+    </form>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-2">Due Verses</h3>
+          <ul id="due-verses-list" class="space-y-2"></ul>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-2">Known Verses</h3>
+          <ul id="known-verses-list" class="space-y-2"></ul>
+        </div>
+      </div>
+
+      <!-- Edit Labels Section -->
+      <div id="edit-labels" class="section hidden">
+        <h2 class="text-xl font-bold mb-4">Edit Labels</h2>
+        <p>Feature coming soon.</p>
+      </div>
+
+      <!-- Collections Section -->
+      <div id="collections" class="section hidden">
+        <h2 class="text-xl font-bold mb-4">Collections</h2>
+        <p>Feature coming soon.</p>
+      </div>
+
+      <!-- Scores Section -->
+      <div id="scores" class="section hidden">
+        <h2 class="text-xl font-bold mb-4">Scores</h2>
+        <p>Feature coming soon.</p>
+      </div>
+
+      <!-- Settings Section -->
+      <div id="settings" class="section hidden">
+        <h2 class="text-xl font-bold mb-4">Settings</h2>
+        <p>Feature coming soon.</p>
+      </div>
+
+      <!-- Help Section -->
+      <div id="help" class="section hidden">
+        <h2 class="text-xl font-bold mb-4">Help</h2>
+        <p>This app helps you memorize Bible verses. Use the "My Verses" section to add and manage your verses.</p>
+      </div>
+
+      <!-- Rating Section -->
+      <div id="rating" class="section hidden">
+        <h2 class="text-xl font-bold mb-4">Rating</h2>
+        <p>Feature coming soon.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-200 text-center p-4 text-sm text-gray-600">
+    &copy; 2024 Remember Me App
+  </footer>
+
+  <script>
+    // Navigation handling
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section');
+
+    function showSection(sectionId) {
+      sections.forEach(section => {
+        section.classList.toggle('hidden', section.id !== sectionId);
+      });
+      navButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.section === sectionId);
+      });
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        showSection(btn.dataset.section);
+      });
+    });
+
+    // Show My Verses by default
+    showSection('my-verses');
+
+    // Verse data management
+    let verses = JSON.parse(localStorage.getItem('verses')) || [];
+
+    function saveVerses() {
+      localStorage.setItem('verses', JSON.stringify(verses));
+    }
+
+    function renderVerses() {
+      const dueList = document.getElementById('due-verses-list');
+      const knownList = document.getElementById('known-verses-list');
+      dueList.innerHTML = '';
+      knownList.innerHTML = '';
+
+      verses.forEach((verse, index) => {
+        const li = document.createElement('li');
+        li.className = 'bg-white p-3 rounded shadow flex justify-between items-center';
+
+        const verseInfo = document.createElement('div');
+        verseInfo.innerHTML = "<strong>" + verse.reference + "</strong>: " + verse.text;
+
+        const controls = document.createElement('div');
+        controls.className = 'flex items-center space-x-2';
+
+        // Read aloud button
+        const readBtn = document.createElement('button');
+        readBtn.className = 'text-blue-600 hover:text-blue-800';
+        readBtn.title = 'Read Aloud';
+        readBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        readBtn.addEventListener('click', () => {
+          const utterance = new SpeechSynthesisUtterance(verse.reference + ": " + verse.text);
+          speechSynthesis.speak(utterance);
+        });
+        controls.appendChild(readBtn);
+
+        // Mark as known or due toggle button
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'text-green-600 hover:text-green-800';
+        toggleBtn.title = verse.known ? 'Mark as Due' : 'Mark as Known';
+        toggleBtn.innerHTML = verse.known ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-clock"></i>';
+        toggleBtn.addEventListener('click', () => {
+          verses[index].known = !verses[index].known;
+          saveVerses();
+          renderVerses();
+        });
+        controls.appendChild(toggleBtn);
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'text-red-600 hover:text-red-800';
+        deleteBtn.title = 'Delete Verse';
+        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        deleteBtn.addEventListener('click', () => {
+          verses.splice(index, 1);
+          saveVerses();
+          renderVerses();
+        });
+        controls.appendChild(deleteBtn);
+
+        li.appendChild(verseInfo);
+        li.appendChild(controls);
+
+        if (verse.known) {
+          knownList.appendChild(li);
+        } else {
+          dueList.appendChild(li);
+        }
+      });
+    }
+
+    // Fetch verse text from biblegateway.com (using a proxy or alternative API)
+    async function fetchVerse(reference, version, language) {
+      // For demonstration, using a placeholder API or static response
+      // In real app, this should call a backend or a public Bible API
+      // Here, we simulate fetching with a delay and static text
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("Sample verse text for " + reference + " (" + version + ", " + language + ")");
+        }, 1000);
+      });
+    }
+
+    // Handle fetch verse button click
+    document.getElementById('fetch-verse-btn').addEventListener('click', async () => {
+      const reference = document.getElementById('verse-reference').value.trim();
+      const version = document.getElementById('bible-version').value;
+      const language = document.getElementById('language').value;
+
+      if (!reference) {
+        alert('Please enter a verse reference.');
+        return;
+      }
+
+      const verseTextArea = document.getElementById('verse-text');
+      verseTextArea.value = 'Fetching verse...';
+
+      try {
+        const verseText = await fetchVerse(reference, version, language);
+        verseTextArea.value = verseText;
+      } catch (error) {
+        verseTextArea.value = '';
+        alert('Failed to fetch verse. Please try again.');
+      }
+    });
+
+    // Handle add verse form submission
+    document.getElementById('add-verse-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const reference = document.getElementById('verse-reference').value.trim();
+      const text = document.getElementById('verse-text').value.trim();
+      if (!reference || !text) {
+        alert('Please enter both verse reference and text.');
+        return;
+      }
+      verses.push({ reference, text, known: false });
+      saveVerses();
+      renderVerses();
+      e.target.reset();
+    });
+
+    // Initial render
+    renderVerses();
+  </script>
+</body>
+</html>
